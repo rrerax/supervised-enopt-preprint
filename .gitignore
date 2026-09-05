@@ -12,3 +12,4 @@ Thumbs.db
 *.xlsx
 *.pdb
 *.pdbqt
+# Generated Word snapshots`r`n*.docx

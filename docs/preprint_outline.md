@@ -29,12 +29,14 @@
 - FtsZ 部分不声称是完整 EnOpt 模型(无标签,仅为 EnOpt-style consensus)。
 
 ## 2. 备选标题
+## 2. 备选标题（2026-09-05 新拟；旧 EN1-EN3 已作废）
 
-- EN1: *Learning to rank docking-score ensembles: a reproducible supervised EnOpt screen of the β2-adrenergic receptor and a label-free transfer case on FtsZ*
-- EN2: *What machine learning does and does not add to ensemble docking: a β2-AR case study with DUD-E validation*
-- EN3: *Reproducible ensemble-docking screening with supervised reranking: honest benchmarks for β2-AR and a legacy FtsZ screen*
-- CN(参考): *多构象对接的监督式重排:β2-肾上腺素受体的可复现筛选与 FtsZ 可迁移案例*
-
+- **★ 推荐**: *From consensus to learned ranking: reproducible ensemble docking for β2-adrenergic receptor screening, with a label-free FtsZ transfer case* —— 点出 FtsZ→β2-AR 学术脉络（硕士项目先做 consensus pilot，本文升级为 learned ranking）
+- N1: *Learning to rank docking-score ensembles: supervised reranking for the β2-adrenergic receptor*
+- N2: *What data can teach ensemble docking: a DUD-E-validated supervised EnOpt screen of β2-AR*
+- N3: *Ensemble docking, learned ranking, and honest limits: size-bias correction in a supervised β2-AR screen*
+- N5: *Reproducible supervised ensemble docking: β2-AR benchmarks and a label-free transfer case on FtsZ*
+- CN(参考): 《从共识重排到监督重排：β2-肾上腺素受体多构象对接的可复现筛选与 FtsZ 无标签迁移案例》
 ## 3. 手稿章节骨架
 
 ### Abstract (DRAFT v0,约 200 词,先改后定稿)
