@@ -15,13 +15,15 @@
 ## 标题候选(2026-09-05 新拟,待定稿)
 | # | 标题 | 备注 |
 |---|---|---|
-| ★ 推荐 | **From consensus to learned ranking: reproducible ensemble docking for β2-adrenergic receptor screening, with a label-free FtsZ transfer case** | 点出 FtsZ→β2-AR 学术脉络(先 consensus 后 learned) |
+| ★ 已定稿 | **From consensus to learned ranking: reproducible ensemble docking for β2-adrenergic receptor screening, with a label-free FtsZ transfer case** | 2026-09-05 选定 |
 | N1 | Learning to rank docking-score ensembles: supervised reranking for the β2-adrenergic receptor | 简洁聚焦 |
 | N2 | What data can teach ensemble docking: a DUD-E-validated supervised EnOpt screen of β2-AR | 强调验证链 |
 | N3 | Ensemble docking, learned ranking, and honest limits: size-bias correction in a supervised β2-AR screen | 强调"诚实边界"卖点 |
 | N5 | Reproducible supervised ensemble docking: β2-AR benchmarks and a label-free transfer case on FtsZ | 备选 |
 
 中文工作标题(答辩/组会用):《从共识重排到监督重排:β2-肾上腺素受体多构象对接的可复现筛选与 FtsZ 无标签迁移案例》
+
+**✅ 标题已定稿(2026-09-05): 采用推荐款**;中文工作标题仅作答辩/组会参考。
 
 ## 目录
 - `manuscript/` — 逐节草稿(00 标题+摘要 → 05 数据可用性)

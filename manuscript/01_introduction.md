@@ -1,10 +1,26 @@
-# 01 · Introduction(draft pending)
+# 01 · Introduction —— Draft v0(2026-09-05)
 
-写作任务(每段 3-5 句,引用见 outline §6):
-1. 单构象刚性受体的局限;GPCR TM6 激活运动改变口袋 → ensemble docking 的必要性。
-2. 组合问题:每个分子有"一组分数",合成方式(mean/best/learned)决定榜单;EnOpt(Bhatt 2024)提出 data-driven 合成。
-3. 系统性偏差:Vina 分数与分子大小相关 → 大分子虚高;per-heavy-atom 视角。
-4. 机器学习可信度:OOF 防自评、property-matched decoys(DUD-E)、95% CI、失败案例透明化。
-5. 本文贡献 + 脉络:EnOpt 思路最早在作者 FtsZ 硕士重构中 pilot(无标签 consensus),本文在 β2-AR 上升级为有 DUD-E 验证的监督 EnOpt,并展示框架可迁移回无标签场景。
+Docking-based virtual screening (VS) is a workhorse of early-stage hit discovery: it scores large, purchasable compound libraries against a target structure and prioritizes a shortlist for experimental follow-up [5,6]. Its practical ceiling is set by two assumptions. First, the receptor is usually treated as a single rigid structure, ignoring the conformational plasticity that often governs ligand recognition. Second, the raw docking score is read as a direct proxy for affinity, although scores frequently correlate with molecular size and other physical properties—a bias we quantify for our own screen below—that can push artifactually favorable large molecules to the top of a ranked list.
 
-素材: Beta2AR `docs/method_notes.md`、`README.md` Stage 1-5;outline §3。
+These assumptions are especially consequential for G protein-coupled receptors (GPCRs). For the β2-adrenergic receptor (β2-AR), structures are available for both the inactive state (e.g., 2RH1 [1]) and the active, G-protein-coupled state (e.g., 3SN6 [2]). The two states differ most in the cytoplasmic half of transmembrane helix 6, whose rearrangement reshapes the orthosteric binding site [1,2]. Because a ligand that fits the inactive-state pocket may dock poorly into the active-state conformation—and vice versa—a single-structure screen can systematically mis-rank genuine actives whose preferred receptor state is not represented.
+
+Ensemble docking addresses this by docking each ligand against several receptor conformations and merging the resulting per-conformation scores [4]. The open question is the merger rule. Simple consensus statistics (e.g., the mean or best score across the ensemble) ignore target-specific knowledge; the ensemble-optimizer (EnOpt) concept made the sharper point that the optimal combination is system-specific and can be learned from data [3]. In our own label-free pilot—a legacy coumarin/FtsZ screen reconstructed from thesis spreadsheets, summarized here as a transfer case—we tested the mechanics of ensemble reranking without experimental actives, where only a rank-consistency weighting was possible and no activity claim could be made.
+
+This paper moves the same idea into the data-rich regime and asks a deliberately narrow question: with known actives available, can a supervised model learn to combine per-conformation docking scores better than consensus baselines, and where exactly does the learned ranking add value? To answer honestly, we built a fully reproducible β2-AR screen: 29,865 ChEMBL-derived molecules docked against five active/inactive conformations (149,325 runs, AutoDock Vina 1.2 [5,6]); an XGBoost reranker trained on 48 in-library actives, expanded to 206 literature actives [8], and validated against 2,978 property-matched DUD-E decoys [7] under strict out-of-fold cross-validation. We then ran three controls that we argue should accompany any such screen: (i) per-heavy-atom-normalized scores, to expose and correct molecular-size bias; (ii) re-docking of the validation set at higher sampling exhaustiveness (exhaustiveness 8), to test whether conclusions are sampling artifacts; and (iii) chemical review of the final shortlist for scaffold diversity, novelty relative to training actives, and problematic substructures (PAINS/Brenk) [9,10].
+
+Three findings stand out. Supervised reranking roughly doubles top-1% enrichment relative to a correctly oriented five-conformation average, but is statistically tied with that average on the overall decoy-separation metric (out-of-fold AUROC 0.696 vs 0.719; confidence intervals overlap)—the model's demonstrable value is at the top of the list, not in global discrimination. Appending per-heavy-atom-normalized scores simultaneously raises the AUROC to 0.751 and removes the large-molecule ranking artifact. And re-docking at exhaustiveness 8 leaves every conclusion unchanged (all confidence intervals overlap), locating the remaining bottleneck in receptor and pose modelling rather than in docking sampling. Finally, the transfer case shows the framework degrades gracefully in a label-free setting: ensemble reranking stabilizes the ranking of reconstructed FtsZ candidates but cannot, by itself, assert biological activity.
+
+In addition to these results, this work contributes a reproducible artifact—code, score tables, trained models, and reports are deposited in the companion repositories—and a set of reporting practices (out-of-fold evaluation, property-matched decoys, confidence intervals, and failure-case disclosure, e.g., the documented CHEMBL776 under-scoring case) that we believe would strengthen docking-based screening studies generally.
+
+## References(provisional —— 发布前用 citation-management 逐条核验卷期页码)
+1. Cherezov V, et al. High-resolution crystal structure of an engineered human beta2-adrenergic G protein-coupled receptor. Science 2007;318:1258-1265. (2RH1)
+2. Rasmussen SGF, et al. Crystal structure of the beta2 adrenergic receptor-Gs protein complex. Nature 2011;477:549-555. (3SN6)
+3. Bhatt NM, Wang A, Durrant JD. Sci Rep 2024;14:20722. (EnOpt) doi:10.1038/s41598-024-71699-3
+4. Houston DR, Walkinshaw MD. Consensus docking: improving the reliability of docking in a virtual screening context. J Med Chem 2003;46:837-843.
+5. Trott O, Olson AJ. AutoDock Vina. J Comput Chem 2010;31:455-461.
+6. Eberhardt J, et al. AutoDock Vina 1.2.0. J Chem Inf Model 2021;61:3891-3898.
+7. Mysinger MM, et al. Directory of useful decoys, enhanced (DUD-E). J Med Chem 2012;55:6582-6594.
+8. Mendez D, et al. ChEMBL. Nucleic Acids Res 2019;47:D930-D940.
+9. Bemis GW, Murcko MA. Scaffolds in medicinal chemistry. J Med Chem 1996;39:2887-2893.
+10. Baell JB, Holloway GA. PAINS. J Med Chem 2010;53:2719-2740.
+11. Landrum G. RDKit: Open-source cheminformatics (rdkit.org).

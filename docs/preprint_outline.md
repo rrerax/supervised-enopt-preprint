@@ -147,7 +147,7 @@ High-throughput virtual screening against a single rigid receptor structure is c
 
 ## 8. 下一步 checklist
 
-- [ ] 定标题 + 期刊 + 作者分工(需你拍板)
+- [x] 定标题(2026-09-05,采用推荐款)· [ ] 定期刊 · [ ] 作者分工
 - [ ] 用 Abstract DRAFT v0 起稿;Intro 起草可用本地 research-writing / nature-writing skill
 - [ ] 新做 Fig 1(框架示意)+ Fig 2(β2-AR 总览),其余图先复用
 - [ ] 汇总 Table 1/2/3(数据已在速查表)
