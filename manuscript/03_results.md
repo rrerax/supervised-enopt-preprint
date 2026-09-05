@@ -1,9 +1,30 @@
-# 03 · Results(骨架,数字以 outline §5 速查表为准)
+# 03 · Results —— Draft v0(2026-09-05)
 
-- 3.1 β2-AR 数据集与对接(Stage 1:29,865 × 5 = 149,325)。
-- 3.2 监督 EnOpt 基线(Stage 2,48 正例,OOF 0.6647,注明其负样本假设被 Stage 3 取代)。
-- 3.3 DUD-E 硬测试(Stage 3:0.696 vs oriented mean 0.719,CI 重叠;top-1% EF 3.9 vs 1.9;合并账目 0.718 vs 0.671)。
-- 3.4 per-heavy-atom(Stage 4:0.696→0.751,EF1 7.3;top-200 MW 393→358)。
-- 3.5 回顾与 top-200 化学评审(仅 50 已知活性→无统计功效;170 scaffolds/192 novel/75 PAINS)。
-- 3.6 ex8 稳健性(Stage 5:CI 重叠;Spearman 0.87-0.91;CHEMBL776 仍垫底)。
-- 3.7 FtsZ 迁移案例(90 结构 450 dock;BP2 legacy-vs-ensemble Spearman ~0.80;无标签边界说明)。
+## 3.1 A reproducible five-conformation β2-AR screen
+Of the 30,000-compound ChEMBL37 library, 29,865 molecules were prepared and docked against five β2-AR conformations (two inactive, three active; PDB 2RH1, 5D5A, 3SN6, 4LDE, 4LDL), yielding 149,325 completed docking runs (Table 1; Fig. 2). The 135 preparation failures (desalting/embedding/PDBQT conversion, incl. timeouts) were retained in an audit manifest rather than dropped. Per-conformation mode-1 scores were reshaped into a 29,865 × 5 matrix; no ligand was discarded for scoring poorly.
+
+## 3.2 Supervised reranking: value at the top of the list, not in global AUROC
+A first supervised model (Stage 2; 48 library actives, remaining library molecules as assumed negatives) reached an out-of-fold AUROC of 0.665 with top-1% enrichment 4.2, and moved known actives from a median rank in the top 39% to the top 22.6% of the library. We report this number only for transparency: the negative labels were assumed, and many library negatives are large molecules that are trivially separable from the small actives, which inflates the AUROC.
+
+Replacing assumed negatives with 2,978 property-matched DUD-E decoys and expanding positives to 206 (48 in-library + 158 literature actives, MW restricted to the decoy window) gave the honest hard test (Stage 3; Table 2):
+- Supervised EnOpt (3-fold OOF): AUROC 0.696 (95% CI 0.655–0.737), EF1% 3.9, EF5% 2.7.
+- Correctly oriented five-conformation mean: AUROC 0.719 (0.679–0.760), EF1% 1.9.
+- Correctly oriented best score: AUROC 0.707 (0.666–0.748), EF1% 1.0.
+
+The EnOpt AUROC overlaps the simple mean (confidence intervals overlap), so on the global decoy-separation metric the learned model is statistically tied with a correctly used consensus average. Where the model demonstrably adds value is the top of the ranked list: ~2× top-1% enrichment (3.9 vs 1.9). In a screening-like accounting that ranks library + decoys + expanded actives together, EnOpt also beats averaging (0.718 vs 0.671; Table 2).
+
+## 3.3 Size normalization: fixing a ranking artifact also improves discrimination
+Raw Vina scores correlate with molecular size. Appending five per-heavy-atom-normalized scores (score / heavy-atom count) as extra features (Stage 4) raised the hard-test AUROC from 0.696 to 0.751 (0.712–0.791) and more than doubled top-1% enrichment (7.3 vs 3.9); the screening-like accounting improved to 0.735 (0.696–0.774) (Table 2). Per-heavy-atom features alone (without the raw scores) performed poorly (0.637), indicating the model needs both the absolute and the size-normalized view.
+
+The artifact is visible in the candidate lists: the Stage-3 top-200 had median molecular weight 393 Da, heavier than the actives (362 Da); the raw+per-ha top-200 has median 358 Da and median 26 heavy atoms, inside the active window. The two leaderboards overlap in only 24/200 molecules, so size normalization materially re-ranks the library rather than rescaling a fixed order.
+
+## 3.4 Retrospective ground truth is sparse; the shortlist is diverse and novel
+A whole-library retrospective against ChEMBL found only 50 of 29,865 library molecules with documented β2-AR potency, of which 48 are the training actives; the remaining 29,817 molecules contain just two additional documented strong actives (CHEMBL24, rank 17,364; CHEMBL776, rank 27,659). A top-200 hit-rate test therefore has no statistical power: zero ChEMBL records in the top-200 means "not previously measured", not "inactive". We instead reviewed the recommended (raw+per-ha) top-200 chemically: 170 unique Bemis–Murcko scaffolds and 167 Butina clusters (Tanimoto 0.5), 192/200 molecules with max-Tanimoto < 0.4 to any training active (largely new chemistry), and 75 PAINS/Brenk-flagged molecules that require case-by-case inspection rather than automatic discard (genuine β2-AR pharmacophores such as catechols are flagged). This shortlist, not the raw leaderboard, is the practical deliverable for procurement/assay planning.
+
+A concrete failure case is informative: CHEMBL776 (orciprenaline, a classic β-agonist, Kd ≈ 500 nM) ranks 27,659/29,865, while its near-isostere CHEMBL434 ranks 14. Small flexible phenylethanolamines score with high variance across conformations; a single bad pose can sink a true active.
+
+## 3.5 Sampling is not the bottleneck: exhaustiveness-8 re-docking
+Re-docking the full validation set (3,184 ligands × 5 conformations = 15,920 runs) and the 201-ligand shortlist (top-200 + CHEMBL776, 1,005 runs) at exhaustiveness 8 with 20 modes left every conclusion unchanged (Stage 5): ex8 hard-test AUROC was 0.654 (0.612–0.695) for raw and 0.733 (0.692–0.772) for raw+per-ha — confidence intervals overlap the ex4 values (0.696 and 0.751), so higher sampling neither rescued nor degraded discrimination. Rankings were stable: Spearman correlation between ex4 and ex8 scores ranged 0.87–0.91 across ranking methods (per-pocket 0.77–0.86), and 89/100 of the ex4 top-100 remained in the ex8 top-100. CHEMBL776 remained last (201/201). The interpretation is that the current ceiling is set by the information content of five rigid-receptor Vina scores (receptor/pose modelling), not by docking sampling quality.
+
+## 3.6 Transfer case: label-free ensemble reranking of a legacy FtsZ screen
+Applying the same framework to the legacy coumarin/FtsZ material reconstructed 90 unique structures from 204 spreadsheet records (BP1 and BP2 pockets) and reproduced docking (90/90 reruns). A five-conformation normal-mode ensemble (ProDy ANM) was docked for all 90 structures (450/450 runs). Without experimental labels, only a rank-consistency weighting (softmax of per-conformation Spearman correlation with the legacy scores) could be applied. The ensemble/weighted rankings correlated strongly with the legacy ranking for BP2 (Spearman ≈ 0.80) and moderately for BP1 (≈ 0.53), and the top weighted candidates (BP1 CHEMBL329500, −7.69 kcal/mol; BP2 85Z, −9.70 kcal/mol) were better scored than in the legacy worksheet (Table 3). These results demonstrate that the ensemble machinery transfers to a second target and to label-free, reconstruction-grade data, while making explicit that ranking stability — not activity — is all that can be claimed without labels.

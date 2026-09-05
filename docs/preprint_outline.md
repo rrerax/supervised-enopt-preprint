@@ -154,6 +154,24 @@ High-throughput virtual screening against a single rigid receptor structure is c
 - [ ] 把 outline 拆成 `paper/manuscript.md` 逐节填充
 - [ ] 数据可用性:确认 30k 库来源文件可公开、模型 pkl 版本说明
 
+## 8b. 进度快照(2026-09-05 晚)
+
+已完成(见 `manuscript/` 与 `figures/`):
+- 00 Title+Keywords+Abstract v1(标题定稿:推荐款)
+- 01 Introduction v0(provisional references 附文末)
+- 02 Methods v0(2.1-2.8,参数锚定两仓库 configs/scripts/docs)
+- 03 Results v0(3.1-3.6,数字= §5 速查表)
+- 04 Discussion & Limitations v0(4.1-4.7)
+- 05 Data & Code Availability v0
+- figures/: Fig 1 框架图、Fig 2 β2-AR 总览(新画 v0);Fig 3-8 素材已拷入 `figures/` 并登记
+- Word 快照(Desktop): Draft1(标题+摘要+Intro)、Draft2(+Methods)、Draft3(+Results+Discussion+Availability)
+
+仍待:
+- 参考文献逐条核验(需联网,用 citation-management)
+- 目标期刊 + 作者分工 + 致谢/funding 占位
+- 图按目标期刊重导出(300+ dpi TIFF/PDF/SVG)与 Fig1/2 视觉校对
+- 手稿仓库发布到 GitHub(GitHub Desktop: Add local repository → Publish)
+- 可选:模型文件 Zenodo 备份
 ## 9. 需要你拍板的决定
 
 1. ~~单篇还是两篇?~~ **已定:单篇(2026-09-05,硕士答辩已完成)**。
