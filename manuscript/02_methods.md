@@ -1,8 +1,36 @@
-# 02 · Methods(骨架,素材=两仓库 scripts)
+# 02 · Methods —— Draft v0(2026-09-05)
 
-- 2.1 通用框架:输入库 → 配体/受体准备 → 多构象对接 → 分子×构象分数矩阵 → 合成器(consensus/supervised)→ 验证 → 候选短名单。(对应 Fig 1)
-- 2.2 β2-AR:5 构象(2RH1/5D5A inactive;4LDE/3SN6/4LDL active);ChEMBL37 30k 库(29,865 可对接);Vina 1.2 ex4;正例 48→206;DUD-E decoys 2,978;XGBoost 3 折 OOF(raw 5 特征;raw+per-ha 10;+HAC 11);ex8 重对接验证集与 top-200。
-- 2.3 FtsZ:旧工作簿重构(按内容推断列含义)、RDKit 清洗、双口袋(ezPocket)、Vina rerun、ANM 5 构象、EnOpt-style 秩一致性权重(无标签)。
-- 2.4 评估:AUROC+95%CI、EF1/EF5、化学评审(Butina/Bemis-Murcko/Tanimoto/PAINS-Brenk)。
+## 2.1 Shared framework
+Both case studies follow one pipeline (Fig. 1): (i) assemble a compound library; (ii) prepare receptor and ligand structures; (iii) dock every ligand against every member of a receptor ensemble; (iv) reshape the docking runs into a ligand × conformation score matrix; (v) reduce the matrix to a single ranking with an explicit combiner — consensus statistics, a supervised model, or a label-free rank-consistency weighting; (vi) validate the ranking against decoys and chemical review; and (vii) emit a shortlist of candidates. All docking was performed with AutoDock Vina; ligand and receptor preparation used RDKit and Open Babel; analyses were written in Python (pandas, NumPy, scikit-learn, XGBoost, RDKit, Matplotlib/seaborn). Full scripts and configuration files are in the companion repositories.
 
-脚本引用: Beta2AR `scripts/01-11`、`revalidation_ex8/`;FtsZ `scripts/*.py`。
+## 2.2 β2-AR main study: data and receptor ensemble
+- Library. A 30,000-compound subset of ChEMBL 37 (release 37) was used as the screening library (smiles + ChEMBL ids). After desalting (largest-fragment retention), canonicalization, 3D embedding and PDBQT conversion, 29,865 structures were docking-ready; the 135 failures (desalt/embed/prep) were recorded in a manifest rather than silently dropped.
+- Receptor ensemble. Five β2-AR crystal structures cover inactive and active states: 2RH1 (inactive, carazolol-bound), 5D5A (inactive, carazolol-bound), 3SN6 (active, Gs-coupled), 4LDE and 4LDL (active, agonist-bound). Receptors were prepared from the PDB (relevant chain, native ligand removed, polar hydrogens as needed) and converted to PDBQT. The docking box was centred on the co-crystallized ligand with an 8 Å padding (default 24 Å cube).
+- Docking. Each prepared ligand was docked against all five conformations with AutoDock Vina (v1.2.5), exhaustiveness 4, up to three modes, fixed seed (config `configs/beta2ar_screen.yml`). Completed runs: 149,325 (29,865 × 5), i.e. one ligand × conformation × mode-1 best-affinity table (`results/tables/docking_scores.csv`).
+
+## 2.3 β2-AR main study: supervised reranking and decoy validation
+- Labels. Positives: 48 β2-AR actives present in the library, curated from ChEMBL direct human assays (Ki/IC50/EC50 ≤ 1 µM; confidence score ≥ 8). In a first supervised model (Stage 2, `scripts/06`), the remaining library molecules were labelled negative by assumption; this model is reported only for transparency and is superseded.
+- Stage-3 hard test. To replace assumed negatives with measured non-binders, 3,000 DUD-E decoys were generated from the β2-AR active list (property-matched by design; 2,978 unique after tautomer collapsing) and docked against the same five conformations (15,000 runs). Positives were expanded by 158 additional ChEMBL literature actives (pChEMBL ≥ 6, human, direct assays) restricted to the decoy 5–95 % molecular-weight window (250–516 Da) so the decoys remain a fair, hard negative set. The training set is therefore 206 actives vs 2,978 decoys.
+- Features. Five features per ligand: the mode-1 Vina score against each conformation.
+- Model and protocol. XGBoost classifier (15 trees, learning rate 0.3, max depth 6, scale_pos_weight = negatives/positives, AUC evaluation), evaluated with 3-fold stratified out-of-fold cross-validation (no ligand is scored by a model trained on it; seed 42). Baselines: simple mean and best score across the ensemble, sign-corrected (more negative = better).
+- Metrics. Out-of-fold AUROC with Hanley–McNeil 95 % confidence intervals; enrichment factors at the top 1 % and 5 % of the ranked list; additionally a screening-like accounting in which the 29,865 library, decoys and expanded actives are ranked together.
+- Reporting protocol. Because the hard-test AUROC of the learned model (0.696; CI 0.655–0.737) overlaps that of the correctly oriented mean (0.719; CI 0.679–0.760), conclusions are drawn from the combination of AUROC, enrichment, and failure-case inspection rather than from AUROC alone (`scripts/07`, `docs/decoy_validation_notes.md`).
+
+## 2.4 Size-bias control: per-heavy-atom features
+Raw Vina scores correlate with molecular size, so heavy-atom counts (HAC) were recomputed from SMILES with RDKit and five per-heavy-atom-normalized scores (score/HAC per conformation) appended as features (`scripts/10`). Feature sets compared under the identical 3-fold OOF protocol: raw (5), raw + per-ha (10), raw + per-ha + HAC (11), and per-ha only (5). The raw + per-ha set is the recommended ranking model (`results/feature_experiment_heavy_atom/`).
+
+## 2.5 Sampling control: exhaustiveness-8 re-docking
+To test whether ex4 results were limited by docking sampling, two independent re-docks were run at exhaustiveness 8 with 20 modes (fixed seed, Vina 1.2.5): (i) the full validation set (206 actives + 2,978 decoys = 3,184 ligands × 5 conformations = 15,920 runs) and (ii) a 201-ligand shortlist (raw+ha top-200 plus the documented failure case CHEMBL776) × 5 = 1,005 runs. Protocol and rerun scripts: `revalidation_ex8/`, `scripts/11_ex4_ex8_rerank.py`. Ranking stability was quantified with Spearman correlation between ex4 and ex8 scores per pocket and per ranking method, plus overlap of the ex4 top-100 within the ex8 top-100.
+
+## 2.6 Shortlist chemistry: diversity, novelty, and interference
+The recommended candidate list (raw+ha top-200) was reviewed chemically (`scripts/09_review_top200.py --ranking ... --rank-col ...`): Butina clustering on Morgan (ECFP4-like) fingerprints at Tanimoto 0.5; Bemis–Murcko scaffold enumeration; novelty as the maximum Tanimoto similarity to any of the 206 training actives; and PAINS/Brenk flags from the RDKit FilterCatalog (reviewed by hand rather than auto-discarded, because genuine β2-AR pharmacophores such as catechols are Brenk-flagged).
+
+## 2.7 FtsZ transfer case: label-free reconstruction and ensemble reranking
+- Reconstruction. Two legacy spreadsheets (BP1, BP2) from a thesis-era coumarin/FtsZ screen were parsed by content rather than by (inherited, unreliable) column headers: compound id, original docking score, Tanimoto similarity to a coumarin reference, SMILES, fingerprint method. SMILES were validated, desalted and canonicalized with RDKit; duplicate structures were merged, giving 90 unique pocket-structure records. Pocket boxes were reconstructed from ezPocket pocket centers/volumes and the residue anchors described in the original notes.
+- Docking rerun. All 90 unique structures were re-docked against the reconstructed BP1/BP2 receptors with AutoDock Vina (v1.2.7, Open Babel 3.1.1; exhaustiveness 4).
+- Receptor ensemble. Five FtsZ receptor conformations were generated from the reconstructed receptor by ProDy anisotropic network-model (ANM) normal modes: the original structure plus positive and negative perturbations along the first two non-trivial modes (target Cα-RMSD 0.65 Å).
+- Ensemble docking and ranking. All 90 ligands were docked against the 5-conformation ensemble (450 runs, exhaustiveness 3). Because no experimental labels exist, the "EnOpt-style" combiner is label-free: per-conformation weights are the softmax (temperature 0.35) of the Spearman correlation between each conformation's scores and the legacy scores (`scripts/analyze_enopt_style.py`). Ranking stability was assessed as the correlation between the legacy worksheet ranking and the ensemble-derived rankings (BP1 and BP2 separately).
+
+## 2.8 Reproducibility
+- β2-AR: scripts 01–11 + `revalidation_ex8/`; configs `beta2ar_screen.yml`, `decoy_screen.yml`, `validation_redock.yml`; all score tables, model cards (JSON), trained models (XGBoost pickles), rankings, and review tables in `results/` and `data/training/`.
+- FtsZ: `scripts/*.py`; processed tables in `data/processed/` and `results/`; raw thesis spreadsheets and the receptor PDB remain local and are not redistributed (see FtsZ `docs/data_availability.md`).
