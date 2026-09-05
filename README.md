@@ -1,6 +1,6 @@
 # Supervised EnOpt Preprint(工作仓库 / working repo)
 
-**Status**: scaffolding · 2026-09-05 · 单篇 preprint(β2-AR 主线 + FtsZ 无标签迁移案例)
+**Status**: draft v0 已完成(2026-09-05 QA 更新)· 单篇 preprint(β2-AR 主线 + FtsZ 无标签迁移案例);逐条进度见 `docs/qa_report_2026-09-05.md`
 **施工图**: `docs/preprint_outline.md`(自 Beta2AR 仓库镜像,此后以本仓库为准)
 
 ## 一句话主线
@@ -31,9 +31,11 @@
 - `figures/README.md` — 图 1-8 映射(哪些复用来源仓库、哪些新画)
 - `source_repos.md` — 来源仓库路径与角色备忘
 
-## 下一步(checklist 详见 outline §8)
-- [ ] 选定标题(未定时默认采用推荐款,随时可改)
-- [ ] Abstract v1 + Introduction 草稿
-- [ ] 新画 Fig 1(框架示意)+ Fig 2(β2-AR 数据总览)
-- [ ] 汇总 Table 1-3
-- [ ] 数据可用性初稿(需确认 30k 库与模型公开方式)
+## 进度(2026-09-05 QA 更新;详见 `docs/qa_report_2026-09-05.md`)
+- [x] 标题定稿(推荐款);Abstract v1 / Introduction v0 / Methods v0 / Results v0 / Discussion v0 / Data & Code v0
+- [x] Fig 1/2 新画 + Fig 3-8 素材入库;正文补图引用(Fig. 1-8)
+- [x] Table 1-3 补齐(`manuscript/06_tables.md`);图注 `manuscript/07_figure_legends.md`
+- [x] 参考文献扩展至 12 条(仍为 provisional,见 `manuscript/01_introduction.md`)
+- [x] 自动拼装单文件 `manuscript/manuscript_full.md` + Word 快照 Draft4
+- [ ] 发布前:联网核验参考文献(citation-management);确定目标期刊+作者分工+funding/致谢;图件 300+dpi TIFF/PDF/SVG 重导出与视觉校对;GitHub 发布(GitHub Desktop,网络直连失败)
+- [ ] 可选:训练模型 pkl/榜单备份至 Zenodo

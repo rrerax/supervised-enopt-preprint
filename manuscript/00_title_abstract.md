@@ -13,4 +13,5 @@ Ensemble docking reduces reliance on a single receptor conformation but leaves a
 ## 版本记录与待办
 - v0(2026-09-05): 初稿。
 - v1(2026-09-05): 定稿标题;压缩至 ~225 词;明确“监督重排增益集中在榜单头部”;CI 统一用 en dash。
-- [ ] 投稿前: 与 Methods/Results 数字互核;按目标期刊控制词数;补充 funding/author 信息后微调“we/our”表述。
+- [x] 数字互核(2026-09-05 QA):Abstract/Methods/Results 关键指标一致(0.696/0.751/ex8 0.654 与 0.733;EF1% 3.9→7.3)。
+- [ ] 投稿前: 与 results/ 表格逐格复核;按目标期刊控制词数;补充 funding/author 后微调“we/our”表述。
