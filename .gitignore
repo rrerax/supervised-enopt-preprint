@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.mamba_vina/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local artifacts (never commit source spreadsheets / receptors here)
+*.xlsx
+*.pdb
+*.pdbqt
