@@ -1,6 +1,6 @@
 # Supervised EnOpt Preprint(工作仓库 / working repo)
 
-**Status, 16 October 2026**: 学习排序器保持不用。下面“一句话主线”里的 per-heavy-atom 0.696→0.751 是未做 logP 配平的比较，不能当作对接特征胜过分子量、Crippen logP 和重原子数。配平窗口在拟合前冻结之后，五分数模型没有留下可用富集。记录在 `rrerax/Beta2AR_SupervisedEnOpt_Screening` 的 `followup_2026-10-16`。本稿正文还没有按这个结论改写。
+**Status, 17 October 2026**: 配平后的前 1% 考试是结论，学习排序器保持不用。0.696 和 0.751 只属于配平前的记录。4LDE 上 CHEMBL434 和 CHEMBL776 已有的 40 个对接姿势都没有通过氢键角度门槛，因此没有自由能数字。记录在 `rrerax/Beta2AR_SupervisedEnOpt_Screening` 的 `followup_2026-10-16`。本稿正文还没有按这个结论改写。
 
 **Status**: draft v0 已完成(2026-09-05 QA 更新)· 单篇 preprint(β2-AR 主线 + FtsZ 无标签迁移案例);逐条进度见 `docs/qa_report_2026-09-05.md`
 **施工图**: `docs/preprint_outline.md`(自 Beta2AR 仓库镜像,此后以本仓库为准)
