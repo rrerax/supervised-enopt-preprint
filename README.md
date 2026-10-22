@@ -1,6 +1,6 @@
 # Supervised EnOpt Preprint(工作仓库 / working repo)
 
-**Status, 17 October 2026**: 配平后的前 1% 考试是结论，学习排序器保持不用。0.696 和 0.751 只属于配平前的记录。4LDE 上 CHEMBL434 和 CHEMBL776 已有的 40 个对接姿势都没有通过氢键角度门槛，因此没有自由能数字。记录在 `rrerax/Beta2AR_SupervisedEnOpt_Screening` 的 `followup_2026-10-16`。本稿正文还没有按这个结论改写。
+**Status, 22 October 2026**: 对接停在五套构象的平均排序上。29,865 个分子里，奥西那林（CHEMBL776）排 25,527，3,4-儿茶酚胺（CHEMBL434）排 26,697，都在后面；分数跟着 logP。写进坐标文件的氢没有三处同时在线上，最小化前 H15 到 Ser203 是 4.161 Å、17.2°，最小化后只剩对 Ser207 的那条氢；另外五个异构体没有通过同一条线。磷脂 4 Å 以内是 0，不改变排序。这个低排名配体不送进平衡，也不做相对自由能。不从这套 Ser203–Ser207，也不从 `popc_3sn6_deposit_min.pdb` 再往下算。留下的结论是：排序跟着 logP，这两个已知配体排在后面；后来摆出的接触没有留在坐标文件里。记录在 `rrerax/Beta2AR_SupervisedEnOpt_Screening` 的 `followup_2026-10-16`。本稿正文还没有按这个结论改写。
 
 **Status**: draft v0 已完成(2026-09-05 QA 更新)· 单篇 preprint(β2-AR 主线 + FtsZ 无标签迁移案例);逐条进度见 `docs/qa_report_2026-09-05.md`
 **施工图**: `docs/preprint_outline.md`(自 Beta2AR 仓库镜像,此后以本仓库为准)
