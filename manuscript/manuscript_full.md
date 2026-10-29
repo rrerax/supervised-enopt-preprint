@@ -1,11 +1,13 @@
-# From consensus to learned ranking: reproducible ensemble docking for β2-adrenergic receptor screening, with a label-free FtsZ transfer case
+# When learned re-ranking does not beat a consensus mean: a pre-specified test on β2-AR ensemble docking, with a label-free FtsZ transfer case
 
 > Single-file working draft · AUTO-ASSEMBLED 2026-09-05 from `manuscript/00–07` · Tables, figure legends and references are collected at the end · All figure/table numbers and reference details remain provisional until journal submission.
 
 # 00 · Title & Abstract
 
-## Title —— 已定稿(2026-09-05)
-From consensus to learned ranking: reproducible ensemble docking for β2-adrenergic receptor screening, with a label-free FtsZ transfer case
+## Title —— 2026-10-29
+When learned re-ranking does not beat a consensus mean: a pre-specified test on β2-AR ensemble docking, with a label-free FtsZ transfer case
+
+The September 2026 title is retired. The abstract below is the 5 September draft. After molecular properties are controlled, the learned ranker does not beat the oriented five-conformation mean.
 
 ## Keywords
 ensemble docking; virtual screening; β2-adrenergic receptor; supervised reranking; DUD-E decoys; molecular-size bias

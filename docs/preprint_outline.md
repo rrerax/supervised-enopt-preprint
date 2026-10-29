@@ -35,7 +35,7 @@ logP 受控后，五分数模型没有稳定超过分子量、logP 和重原子�
 ## 2. 备选标题
 ## 2. 备选标题（2026-09-05 新拟；旧 EN1-EN3 已作废）
 
-- **★ 推荐**: *From consensus to learned ranking: reproducible ensemble docking for β2-adrenergic receptor screening, with a label-free FtsZ transfer case* —— 点出 FtsZ→β2-AR 学术脉络（硕士项目先做 consensus pilot，本文升级为 learned ranking）
+- **★ 当前标题（2026-10-29）**: *When learned re-ranking does not beat a consensus mean: a pre-specified test on β2-AR ensemble docking, with a label-free FtsZ transfer case* —— 替换 9 月 “From consensus to learned ranking…”。那个标题和 10 月的结论相反。
 - N1: *Learning to rank docking-score ensembles: supervised reranking for the β2-adrenergic receptor*
 - N2: *What data can teach ensemble docking: a DUD-E-validated supervised EnOpt screen of β2-AR*
 - N3: *Ensemble docking, learned ranking, and honest limits: size-bias correction in a supervised β2-AR screen*
